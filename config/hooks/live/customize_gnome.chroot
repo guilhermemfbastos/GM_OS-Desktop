@@ -1,0 +1,390 @@
+#!/bin/bash
+# =============================================================================
+# customize_gnome.chroot - Hook de customização do GNOME (roda dentro do chroot)
+# =============================================================================
+# Este script é executado durante o build dentro do ambiente chroot para:
+# - Baixar e instalar temas visuais (GTK, Shell, Ícones)
+# - Instalar extensões do GNOME manualmente
+# - Configurar dconf/gsettings com overrides personalizados
+# - Definir wallpapers padrão
+# =============================================================================
+
+set -e
+
+echo "=========================================="
+echo "Customizando GNOME Desktop Environment"
+echo "=========================================="
+
+# Variáveis de ambiente para consistência
+export DEBIAN_FRONTEND=noninteractive
+export LC_ALL=C.UTF-8
+export LANG=C.UTF-8
+
+# Diretórios base
+THEMES_DIR="/usr/share/themes"
+ICONS_DIR="/usr/share/icons"
+EXTENSIONS_DIR="/usr/share/gnome-shell/extensions"
+BACKGROUNDS_DIR="/usr/share/backgrounds"
+SKEL_DIR="/etc/skel"
+SCHEMAS_DIR="/usr/share/glib-2.0/schemas"
+
+# -----------------------------------------------------------------------------
+# 1. INSTALAR TEMAS E ÍCONES
+# -----------------------------------------------------------------------------
+echo "[1/6] Instalando temas e ícones..."
+
+# Instalar dependências para compilação de temas
+apt-get install -y \
+    sassc \
+    meson \
+    ninja-build \
+    gettext \
+    libglib2.0-dev \
+    libgtk-3-dev \
+    gnome-themes-extra \
+    gnome-themes-extra-data \
+    || true
+
+# Baixar e instalar tema WhiteSur GTK (tema moderno estilo macOS)
+echo "Baixando tema WhiteSur GTK..."
+cd /tmp
+git clone --depth 1 https://github.com/vinceliuice/WhiteSur-gtk-theme.git
+cd WhiteSur-gtk-theme
+./install.sh --dest "$THEMES_DIR"
+cd /tmp
+rm -rf WhiteSur-gtk-theme
+
+# Baixar e instalar ícones Papirus Dark
+echo "Baixando ícones Papirus Dark..."
+cd /tmp
+wget -q https://github.com/PapirusDevelopmentTeam/papirus-icon-theme/releases/download/latest/Papirus-Dark.tar.xz
+tar -xf Papirus-Dark.tar.xz -C "$ICONS_DIR"
+rm -f Papirus-Dark.tar.xz
+cd /tmp
+
+# Baixar cursores Capitaine Cursors (minimalista)
+echo "Baixando cursores Capitaine..."
+cd /tmp
+git clone --depth 1 https://github.com/keeferrourke/capitaine-cursors.git
+cd capitaine-cursors
+./install.sh --dest-dir "$ICONS_DIR"
+cd /tmp
+rm -rf capitaine-cursors
+
+# -----------------------------------------------------------------------------
+# 2. INSTALAR EXTENSÕES DO GNOME
+# -----------------------------------------------------------------------------
+echo "[2/6] Instalando extensões do GNOME..."
+
+# Criar diretório de extensões se não existir
+mkdir -p "$EXTENSIONS_DIR"
+
+# Dash to Dock (extensão popular para dock personalizável)
+echo "Instalando extensão Dash to Dock..."
+EXTENSION_URL="https://extensions.gnome.org/extension-data/dash-to-dockmicxgx.gmail.com.shell-extension.zip"
+EXTENSION_UUID="dash-to-dock@micxgx.gmail.com"
+mkdir -p "$EXTENSIONS_DIR/$EXTENSION_UUID"
+cd /tmp
+wget -q "$EXTENSION_URL" -O dash-to-dock.zip
+unzip -q dash-to-dock.zip -d "$EXTENSIONS_DIR/$EXTENSION_UUID"
+rm -f dash-to-dock.zip
+
+# Blur my Shell (efeitos visuais modernos de desfoque)
+echo "Instalando extensão Blur my Shell..."
+EXTENSION_UUID="blur-my-shell@aunetx"
+mkdir -p "$EXTENSIONS_DIR/$EXTENSION_UUID"
+cd /tmp
+# Tentar baixar a versão mais recente via API do GitHub
+LATEST_BLUR=$(curl -s https://api.github.com/repos/aunetx/blur-my-shell/releases/latest | grep '"tag_name":' | cut -d'"' -f4)
+if [ -n "$LATEST_BLUR" ]; then
+    wget -q "https://github.com/aunetx/blur-my-shell/archive/refs/tags/${LATEST_BLUR}.zip" -O blur-my-shell.zip
+    unzip -q blur-my-shell.zip
+    mv blur-my-shell-${LATEST_BLUR}/extension/* "$EXTENSIONS_DIR/$EXTENSION_UUID/" 2>/dev/null || true
+    rm -rf blur-my-shell-${LATEST_BLUR} blur-my-shell.zip
+else
+    echo "Aviso: Não foi possível baixar Blur my Shell, pulando..."
+fi
+
+# User Themes (permite carregar temas da shell personalizados)
+echo "Instalando extensão User Themes..."
+EXTENSION_UUID="user-theme@gnome-shell-extensions.gcampax.github.com"
+mkdir -p "$EXTENSIONS_DIR/$EXTENSION_UUID"
+cd /tmp
+# User Themes agora faz parte das gnome-shell-extensions oficiais
+# Copiar do pacote instalado se disponível
+if [ -d "/usr/share/gnome-shell/extensions/user-theme@gnome-shell-extensions.gcampax.github.com" ]; then
+    cp -r "/usr/share/gnome-shell/extensions/user-theme@gnome-shell-extensions.gcampax.github.com"/* "$EXTENSIONS_DIR/$EXTENSION_UUID/"
+fi
+
+# Just Perfection (customização avançada do GNOME)
+echo "Instalando extensão Just Perfection..."
+EXTENSION_UUID="just-perfection-desktop@just-perfection"
+mkdir -p "$EXTENSIONS_DIR/$EXTENSION_UUID"
+cd /tmp
+LATEST_JP=$(curl -s https://api.github.com/repos/just-perfection/shell-extensions/releases/latest | grep '"tag_name":' | cut -d'"' -f4)
+if [ -n "$LATEST_JP" ]; then
+    wget -q "https://github.com/just-perfection/shell-extensions/archive/refs/tags/${LATEST_JP}.zip" -O just-perfection.zip
+    unzip -q just-perfection.zip
+    mv shell-extensions-${LATEST_JP}/just-perfection/* "$EXTENSIONS_DIR/$EXTENSION_UUID/" 2>/dev/null || true
+    rm -rf shell-extensions-${LATEST_JP} just-perfection.zip
+else
+    echo "Aviso: Não foi possível baixar Just Perfection, pulando..."
+fi
+
+# -----------------------------------------------------------------------------
+# 3. CONFIGURAR WALLPAPERS
+# -----------------------------------------------------------------------------
+echo "[3/6] Configurando wallpapers..."
+
+# Criar diretório de backgrounds
+mkdir -p "$BACKGROUNDS_DIR/custom"
+
+# Baixar wallpaper personalizado (gradiente moderno)
+echo "Baixando wallpaper padrão..."
+cd /tmp
+# Wallpaper estilo gradiente Tokyonight (cores escuras modernas)
+cat > /tmp/wallpaper.svg << 'SVGEOF'
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1920" height="1080" viewBox="0 0 1920 1080">
+  <defs>
+    <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1a1b26;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#24283b;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#414868;stop-opacity:1" />
+    </linearGradient>
+    <radialGradient id="glow" cx="50%" cy="50%" r="40%">
+      <stop offset="0%" style="stop-color:#7aa2f7;stop-opacity:0.15" />
+      <stop offset="100%" style="stop-color:#7aa2f7;stop-opacity:0" />
+    </radialGradient>
+  </defs>
+  <rect width="1920" height="1080" fill="url(#grad1)"/>
+  <circle cx="960" cy="540" r="400" fill="url(#glow)"/>
+</svg>
+SVGEOF
+
+# Converter SVG para PNG (se rsvg-convert estiver disponível)
+if command -v rsvg-convert &> /dev/null; then
+    rsvg-convert -w 1920 -h 1080 /tmp/wallpaper.svg -o "$BACKGROUNDS_DIR/custom/default-wallpaper.png"
+else
+    # Fallback: usar SVG diretamente ou criar um XML de background
+    cp /tmp/wallpaper.svg "$BACKGROUNDS_DIR/custom/default-wallpaper.svg"
+fi
+
+# Criar arquivo XML do GNOME Background
+cat > "$BACKGROUNDS_DIR/custom/default-wallpaper.xml" << 'XMLEOF'
+<?xml version="1.0"?>
+<!DOCTYPE wallpapers SYSTEM "gnome-bg-walls.dtd">
+<wallpapers>
+  <wallpaper deleted="false">
+    <name>Custom Default Wallpaper</name>
+    <filename>/usr/share/backgrounds/custom/default-wallpaper.png</filename>
+    <filename-dark>/usr/share/backgrounds/custom/default-wallpaper.png</filename-dark>
+    <options>zoom</options>
+    <shade_type>solid</shade_type>
+    <pcolor>#1a1b26</pcolor>
+    <scolor>#414868</scolor>
+  </wallpaper>
+</wallpapers>
+XMLEOF
+
+# Limpeza
+rm -f /tmp/wallpaper.svg
+cd /workspace
+
+# -----------------------------------------------------------------------------
+# 4. CRIAR OVERRIDE DCONF/GSETTINGS
+# -----------------------------------------------------------------------------
+echo "[4/6] Criando overrides do GSettings/Dconf..."
+
+# Criar arquivo de override para configurações do GNOME
+cat > "$SCHEMAS_DIR/90_custom_gnome.gschema.override" << 'OVERRIDEEOF'
+[org/gnome/desktop/interface]
+gtk-theme='WhiteSur-Dark'
+icon-theme='Papirus-Dark'
+cursor-theme='Capitaine Cursors'
+font-name='Inter 11'
+document-font-name='Inter 11'
+monospace-font-name='Fira Code 11'
+color-scheme='prefer-dark'
+
+[org/gnome/shell]
+favorite-apps=['org.gnome.Nautilus.desktop', 'org.gnome.Terminal.desktop', 'org.gnome.TextEditor.desktop', 'org.gnome.Software.desktop', 'org.gnome.Firefox.desktop']
+enabled-extensions=['dash-to-dock@micxgx.gmail.com', 'blur-my-shell@aunetx', 'user-theme@gnome-shell-extensions.gcampax.github.com', 'just-perfection-desktop@just-perfection']
+user-theme='WhiteSur-Dark'
+
+[org/gnome/desktop/background]
+picture-uri='file:///usr/share/backgrounds/custom/default-wallpaper.png'
+picture-uri-dark='file:///usr/share/backgrounds/custom/default-wallpaper.png'
+picture-options='zoom'
+primary-color='#1a1b26'
+secondary-color='#414868'
+
+[org/gnome/desktop/wm/preferences]
+button-layout='appmenu:minimize,maximize,close'
+focus-mode='click'
+auto-raise=true
+resize-with-right-button=true
+
+[org/gnome/mutter]
+edge-tiling=false
+workspaces-only-on-primary=true
+
+[org/gnome/settings-daemon/plugins/power]
+power-button-action='interactive'
+lid-close-ac-action='nothing'
+lid-close-battery-action='nothing'
+
+[org/gnome/shell/extensions/dash-to-dock]
+dock-position='BOTTOM'
+dock-fixed=true
+intellihide=false
+show-mounts-only-mounted=true
+animate-show-apps=true
+hide-overlap=true
+extend-height=false
+dash-max-icon-size=48
+unity-backlit-items=false
+preferred-monitor=-2
+multi-monitor=true
+require-pressure-to-show=false
+scroll-switch-apps=false
+backlit-opacity=100
+opacity=100
+custom-theme-shrink=true
+custom-theme-running-dots=true
+custom-theme-active-dot-opacity=255
+custom-theme-dot-border-width=0
+custom-theme-dot-size=0
+custom-theme-customize-dash=false
+running-indicator-style='DOTS'
+
+[org/gnome/shell/extensions/blur-my-shell]
+enable-blur=true
+blur-on-lockscreen=true
+blur-in-overview=true
+blur-in-appgrid=true
+noise-amount=0.05
+brightness=0.8
+sigma=30
+
+[org/gnome/nautilus/preferences]
+default-folder-viewer='list'
+show-hidden-files=false
+search-filter-time-type='last_modified'
+
+[org/gnome/terminal/legacy/profiles:]
+theme-variant='dark'
+
+[org/gnome/settings-daemon/plugins/media-keys]
+custom-keybindings=['/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0/']
+
+[org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0]
+binding='<Super>T'
+command='gnome-terminal'
+name='Open Terminal'
+OVERRIDEEOF
+
+# Compilar schemas para aplicar as mudanças
+echo "Compilando schemas do GSettings..."
+glib-compile-schemas "$SCHEMAS_DIR"
+
+# -----------------------------------------------------------------------------
+# 5. CONFIGURAR ESKELETON (/etc/skel)
+# -----------------------------------------------------------------------------
+echo "[5/6] Configurando skeleton para novos usuários..."
+
+# Criar estrutura de diretórios no skel
+mkdir -p "$SKEL_DIR/.config/gnome-shell/extensions"
+mkdir -p "$SKEL_DIR/.config/dconf"
+mkdir -p "$SKEL_DIR/.local/share/gnome-shell/extensions"
+
+# Copiar configurações dconf para o skel (serão aplicadas ao primeiro login)
+cat > "$SKEL_DIR/.config/gnome-initial-setup-done" << 'EOF'
+done
+EOF
+
+# Criar script de primeira inicialização para aplicar configurações
+cat > "$SKEL_DIR/.config/autostart-scripts/apply-gnome-settings.sh" << 'AUTOSTARTEOF'
+#!/bin/bash
+# Script executado na primeira inicialização para aplicar configurações
+
+sleep 5
+
+# Aplicar configurações do dconf
+dconf load / < /usr/share/glib-2.0/schemas/90_custom_gnome.gschema.override 2>/dev/null || true
+
+# Habilitar extensões
+for ext in dash-to-dock@micxgx.gmail.com blur-my-shell@aunetx user-theme@gnome-shell-extensions.gcampax.github.com just-perfection-desktop@just-perfection; do
+    gnome-extensions enable "$ext" 2>/dev/null || true
+done
+
+# Remover este script após execução
+rm -f ~/.config/autostart-scripts/apply-gnome-settings.sh
+AUTOSTARTEOF
+
+chmod +x "$SKEL_DIR/.config/autostart-scripts/apply-gnome-settings.sh"
+
+# Copiar symlinks para extensões do sistema para o skel do usuário
+for ext_dir in "$EXTENSIONS_DIR"/*/; do
+    if [ -d "$ext_dir" ]; then
+        ext_uuid=$(basename "$ext_dir")
+        ln -sf "$ext_dir" "$SKEL_DIR/.local/share/gnome-shell/extensions/$ext_uuid" 2>/dev/null || true
+    fi
+done
+
+# -----------------------------------------------------------------------------
+# 6. REMOVER BLOATWARE E LIMPEZA
+# -----------------------------------------------------------------------------
+echo "[6/6] Removendo bloatware e limpando..."
+
+# Remover jogos e aplicativos desnecessários do GNOME
+apt-get purge -y \
+    aisleriot \
+    gnome-sudoku \
+    gnome-mahjongg \
+    gnome-mines \
+    gnome-taquin \
+    gnome-tetravex \
+    gnome-2048 \
+    gnome-klotski \
+    hitori \
+    iagno \
+    lightsoff \
+    quadrapassel \
+    swell-foop \
+    tali \
+    gnome-maps \
+    gnome-weather \
+    gnome-contacts \
+    gnome-characters \
+    gnome-font-viewer \
+    || true
+
+# Limpar cache do apt
+apt-get clean
+apt-get autoremove -y
+
+# Limpar arquivos temporários
+rm -rf /tmp/*
+rm -rf /var/tmp/*
+rm -rf /var/cache/apt/archives/*.deb
+
+# -----------------------------------------------------------------------------
+# FINALIZAÇÃO
+# -----------------------------------------------------------------------------
+echo ""
+echo "=========================================="
+echo "Customização do GNOME concluída!"
+echo "=========================================="
+echo ""
+echo "Temas instalados: WhiteSur-Dark"
+echo "Ícones instalados: Papirus-Dark"
+echo "Cursores instalados: Capitaine Cursors"
+echo "Extensões instaladas:"
+echo "  - Dash to Dock"
+echo "  - Blur my Shell"
+echo "  - User Themes"
+echo "  - Just Perfection"
+echo ""
+echo "Configurações aplicadas via dconf override."
+echo ""
