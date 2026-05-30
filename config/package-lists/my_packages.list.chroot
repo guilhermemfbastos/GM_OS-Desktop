@@ -1,0 +1,169 @@
+# =============================================================================
+# my_packages.list.chroot - Lista de pacotes para instalação no sistema chroot
+# =============================================================================
+# Esta lista contém todos os pacotes que serão instalados na imagem final.
+# Otimizada para GNOME minimalista com gnome-core (evitando bloatware).
+# =============================================================================
+
+# -----------------------------------------------------------------------------
+# SISTEMA BASE E GERENCIADORES
+# -----------------------------------------------------------------------------
+xorg
+gnome-core
+gdm3
+network-manager-gnome
+network-manager
+pipewire
+pipewire-audio-client-libraries
+pulseaudio-utils
+firmware-linux-nonfree
+firmware-misc-nonfree
+
+# -----------------------------------------------------------------------------
+# UTILITÁRIOS ESSENCIAIS DO SISTEMA
+# -----------------------------------------------------------------------------
+sudo
+curl
+wget
+git
+neofetch
+fastfetch
+nano
+vim
+gparted
+gnome-terminal
+gnome-system-monitor
+gnome-disk-utility
+file-roller
+eog
+evince
+seahorse
+baobab
+logsave
+gnome-calculator
+gnome-text-editor
+
+# -----------------------------------------------------------------------------
+# FONTES E SUPORTE A IDIOMAS
+# -----------------------------------------------------------------------------
+fonts-noto-core
+fonts-noto-color-emoji
+fonts-ubuntu
+fonts-firacode
+fontconfig
+localechooser-data
+task-portuguese
+
+# -----------------------------------------------------------------------------
+# FERRAMENTAS DE REDE E CONECTIVIDADE
+# -----------------------------------------------------------------------------
+openssh-client
+openssh-server
+avahi-daemon
+avahi-utils
+cups
+cups-pk-helper
+printer-driver-all
+
+# -----------------------------------------------------------------------------
+# SUPORTE A MÍDIA E CODECS
+# -----------------------------------------------------------------------------
+gstreamer1.0-plugins-base
+gstreamer1.0-plugins-good
+gstreamer1.0-plugins-bad
+gstreamer1.0-plugins-ugly
+gstreamer1.0-libav
+gstreamer1.0-pulseaudio
+libgstreamer1.0-0
+gstreamer1.0-tools
+ffmpeg
+libavcodec-extra
+
+# -----------------------------------------------------------------------------
+# UTILITÁRIOS ADICIONAIS PARA PRODUTIVIDADE
+# -----------------------------------------------------------------------------
+gnome-software
+gnome-software-plugin-flatpak
+flatpak
+apparmor
+apparmor-utils
+polkitd
+udisks2
+upower
+accountsservice
+colord
+geoclue-2.0
+iio-sensor-proxy
+modemmanager
+rfkill
+usbutils
+pciutils
+hdparm
+smartmontools
+lm-sensors
+htop
+iotop
+ncdu
+tree
+jq
+xz-utils
+bzip2
+p7zip-full
+unrar-free
+
+# -----------------------------------------------------------------------------
+# EXTENSÕES DO GNOME (via apt quando disponível)
+# -----------------------------------------------------------------------------
+gnome-shell-extensions
+chrome-gnome-shell
+
+# -----------------------------------------------------------------------------
+# PACOTES PARA REMOVER (BLOATWARE DO GNOME)
+# Estes pacotes serão explicitamente removidos para reduzir o tamanho
+# -----------------------------------------------------------------------------
+# Jogos e aplicativos desnecessários
+aisleriot
+gnome-sudoku
+gnome-mahjongg
+gnome-mines
+gnome-taquin
+gnome-tetravex
+gnome-2048
+gnome-klotski
+hitori
+iagno
+lightsoff
+quadrapassel
+swell-foop
+tali
+
+# Aplicativos redundantes ou pouco utilizados
+gnome-maps
+gnome-weather
+gnome-calendar
+gnome-contacts
+gnome-characters
+gnome-font-viewer
+gnome-remote-desktop
+gnome-user-share
+gnome-online-accounts-gtk
+gnome-shell-extension-ubuntu-dock
+
+# Acessibilidade pesada (opcional - remover se não for necessário)
+# caribou
+# onboard
+# orca
+# mousetweaks
+
+# Impressão e scanner (mantido mínimo)
+# cups-browsed
+# system-config-printer-common
+
+# Bluetooth (comentar se quiser manter)
+# bluez
+# gnome-bluetooth
+
+# -----------------------------------------------------------------------------
+# NOTA: Pacotes comentados não serão instalados/removidos
+# Para remover, use a lista negative no live-build ou configure no hook
+# -----------------------------------------------------------------------------
