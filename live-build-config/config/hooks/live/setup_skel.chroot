@@ -1,0 +1,100 @@
+#!/bin/bash
+# =============================================================================
+# setup_skel.chroot - Hook adicional para configuração do /etc/skel
+# =============================================================================
+# Este hook complementa o customize_gnome.chroot configurando arquivos
+# adicionais no skeleton do usuário para uma experiência consistente.
+# =============================================================================
+
+set -e
+
+echo "=========================================="
+echo "Configurando Skeleton de Usuário (/etc/skel)"
+echo "=========================================="
+
+export DEBIAN_FRONTEND=noninteractive
+SKEL_DIR="/etc/skel"
+
+# -----------------------------------------------------------------------------
+# 1. CONFIGURAR ARQUIVOS DO GNOME NO SKEL
+# -----------------------------------------------------------------------------
+echo "[1/4] Criando estrutura de diretórios do GNOME no skel..."
+
+mkdir -p "$SKEL_DIR/.config/gnome-shell"
+mkdir -p "$SKEL_DIR/.config/gnome-shell/extensions"
+mkdir -p "$SKEL_DIR/.local/share/gnome-shell"
+mkdir -p "$SKEL_DIR/.local/share/gnome-shell/extensions"
+mkdir -p "$SKEL_DIR/.config/dconf"
+mkdir -p "$SKEL_DIR/.config/autostart"
+mkdir -p "$SKEL_DIR/.config/systemd/user"
+
+# -----------------------------------------------------------------------------
+# 2. CRIAR ARQUIVO DE PREFERÊNCIAS DO GNOME SHELL
+# -----------------------------------------------------------------------------
+echo "[2/4] Criando preferências padrão do GNOME Shell..."
+
+cat > "$SKEL_DIR/.config/gnome-shell/state" << 'STATEEOF'
+{
+    "extensionPrefs": {
+        "dash-to-dock@micxgx.gmail.com": {
+            "dock-position": "'BOTTOM'",
+            "dock-fixed": "true",
+            "intellihide": "false"
+        }
+    },
+    "hasCustomLayout": false
+}
+STATEEOF
+
+# -----------------------------------------------------------------------------
+# 3. CONFIGURAR TERMINAL GNOME PADRÃO
+# -----------------------------------------------------------------------------
+echo "[3/4] Configurando GNOME Terminal..."
+
+# Criar perfil padrão do terminal
+cat > "$SKEL_DIR/.config/gnome-terminal-profiles.conf" << 'TERMINALEOF'
+[profiles/default]
+visible-name="Custom Dark"
+palette-color-scheme="terminal"
+foreground-color="#f8f8f2"
+background-color="#1a1b26"
+use-theme-colors=false
+bold-color="#ffffff"
+cursor-background-color="#f8f8f2"
+cursor-foreground-color="#1a1b26"
+highlight-background-color="#44475a"
+highlight-foreground-color="#f8f8f2"
+use-transparent-background=false
+background-darkness=0.95
+font="Fira Code 11"
+audible-bell=false
+scrollback-unlimited=true
+TERMINALEOF
+
+# -----------------------------------------------------------------------------
+# 4. CONFIGURAR NAUTILUS (GERENCIADOR DE ARQUIVOS)
+# -----------------------------------------------------------------------------
+echo "[4/4] Configurando Nautilus..."
+
+# Configurar visualização padrão como lista
+mkdir -p "$SKEL_DIR/.config/gtk-3.0"
+
+cat > "$SKEL_DIR/.config/gtk-3.0/settings.ini" << 'GTKEOF'
+[Settings]
+gtk-theme-name=WhiteSur-Dark
+gtk-icon-theme-name=Papirus-Dark
+gtk-cursor-theme-name=Capitaine Cursors
+gtk-font-name=Inter 11
+gtk-application-prefer-dark-theme=true
+gtk-enable-primary-paste=true
+gtk-decoration-layout=appmenu:minimize,maximize,close
+GTKEOF
+
+# Limpeza
+rm -rf /tmp/*
+
+echo ""
+echo "=========================================="
+echo "Skeleton configurado com sucesso!"
+echo "=========================================="
+echo ""

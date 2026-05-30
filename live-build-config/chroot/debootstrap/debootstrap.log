@@ -1,0 +1,45 @@
+amd64: ok
+
+Redirecting output to ‘wget-log’.
+gpgv: Signature made Sat May 16 10:55:03 2026 UTC
+gpgv:                using RSA key 4CB50190207B4758A3F73A796ED0E7B82643E131
+gpgv: Good signature from "Debian Archive Automatic Signing Key (12/bookworm) <ftpmaster@debian.org>"
+gpgv: Signature made Sat May 16 10:55:04 2026 UTC
+gpgv:                using RSA key B8E5F13176D2A7A75220028078DBA3BC47EF2265
+gpgv: Can't check signature: No public key
+gpgv: Signature made Sat May 16 11:00:22 2026 UTC
+gpgv:                using EDDSA key 4D64FEC119C2029067D6E791F8D2585B8783D481
+gpgv: Good signature from "Debian Stable Release Key (12/bookworm) <debian-release@lists.debian.org>"
+
+Redirecting output to ‘wget-log.1’.
+
+Redirecting output to ‘wget-log.2’.
+
+Redirecting output to ‘wget-log.3’.
+
+Redirecting output to ‘wget-log.4’.
+2026-05-30 11:43:58 URL:http://deb.debian.org/debian/pool/main/a/adduser/adduser_3.134_all.deb [183272/183272] -> "/workspace/live-build-config/chroot//var/cache/apt/archives/partial/adduser_3.134_all.deb" [1]
+2026-05-30 11:43:58 URL:http://deb.debian.org/debian/pool/main/a/apt/apt_2.6.1_amd64.deb [1372852/1372852] -> "/workspace/live-build-config/chroot//var/cache/apt/archives/partial/apt_2.6.1_amd64.deb" [1]
+2026-05-30 11:43:58 URL:http://deb.debian.org/debian/pool/main/a/apt/apt-utils_2.6.1_amd64.deb [309288/309288] -> "/workspace/live-build-config/chroot//var/cache/apt/archives/partial/apt-utils_2.6.1_amd64.deb" [1]
+2026-05-30 11:43:58 URL:http://deb.debian.org/debian/pool/main/b/base-files/base-files_12.4+deb12u14_amd64.deb [70940/70940] -> "/workspace/live-build-config/chroot//var/cache/apt/archives/partial/base-files_12.4+deb12u14_amd64.deb" [1]
+2026-05-30 11:43:58 URL:http://deb.debian.org/debian/pool/main/b/base-passwd/base-passwd_3.6.1_amd64.deb [59972/59972] -> "/workspace/live-build-config/chroot//var/cache/apt/archives/partial/base-passwd_3.6.1_amd64.deb" [1]
+2026-05-30 11:43:58 URL:http://deb.debian.org/debian/pool/main/b/bash/bash_5.2.15-2+b13_amd64.deb [1490652/1490652] -> "/workspace/live-build-config/chroot//var/cache/apt/archives/partial/bash_5.2.15-2+b13_amd64.deb" [1]
+2026-05-30 11:43:58 URL:http://deb.debian.org/debian/pool/main/u/util-linux/bsdutils_2.38.1-5+deb12u3_amd64.deb [94412/94412] -> "/workspace/live-build-config/chroot//var/cache/apt/archives/partial/bsdutils_1%3a2.38.1-5+deb12u3_amd64.deb" [1]
+2026-05-30 11:43:58 URL:http://deb.debian.org/debian/pool/main/c/coreutils/coreutils_9.1-1_amd64.deb [2896560/2896560] -> "/workspace/live-build-config/chroot//var/cache/apt/archives/partial/coreutils_9.1-1_amd64.deb" [1]
+2026-05-30 11:43:58 URL:http://deb.debian.org/debian/pool/main/c/cpio/cpio_2.13+dfsg-7.1_amd64.deb [245036/245036] -> "/workspace/live-build-config/chroot//var/cache/apt/archives/partial/cpio_2.13+dfsg-7.1_amd64.deb" [1]
+2026-05-30 11:43:58 URL:http://deb.debian.org/debian/pool/main/c/cron/cron_3.0pl1-162_amd64.deb [73084/73084] -> "/workspace/live-build-config/chroot//var/cache/apt/archives/partial/cron_3.0pl1-162_amd64.deb" [1]
+2026-05-30 11:43:58 URL:http://deb.debian.org/debian/pool/main/c/cron/cron-daemon-common_3.0pl1-162_all.deb [12660/12660] -> "/workspace/live-build-config/chroot//var/cache/apt/archives/partial/cron-daemon-common_3.0pl1-162_all.deb" [1]
+2026-05-30 11:43:58 URL:http://deb.debian.org/debian/pool/main/d/dash/dash_0.5.12-2_amd64.deb [91848/91848] -> "/workspace/live-build-config/chroot//var/cache/apt/archives/partial/dash_0.5.12-2_amd64.deb" [1]
+2026-05-30 11:43:58 URL:http://deb.debian.org/debian/pool/main/d/debconf/debconf_1.5.82_all.deb [121212/121212] -> "/workspace/live-build-config/chroot//var/cache/apt/archives/partial/debconf_1.5.82_all.deb" [1]
+2026-05-30 11:43:58 URL:http://deb.debian.org/debian/pool/main/d/debconf/debconf-i18n_1.5.82_all.deb [208040/208040] -> "/workspace/live-build-config/chroot//var/cache/apt/archives/partial/debconf-i18n_1.5.82_all.deb" [1]
+2026-05-30 11:43:58 URL:http://deb.debian.org/debian/pool/main/d/debian-archive-keyring/debian-archive-keyring_2023.3+deb12u2_all.deb [178572/178572] -> "/workspace/live-build-config/chroot//var/cache/apt/archives/partial/debian-archive-keyring_2023.3+deb12u2_all.deb" [1]
+2026-05-30 11:43:58 URL:http://deb.debian.org/debian/pool/main/d/debianutils/debianutils_5.7-0.5~deb12u1_amd64.deb [102588/102588] -> "/workspace/live-build-config/chroot//var/cache/apt/archives/partial/debianutils_5.7-0.5~deb12u1_amd64.deb" [1]
+2026-05-30 11:43:58 URL:http://deb.debian.org/debian/pool/main/d/diffutils/diffutils_3.8-4_amd64.deb [351740/351740] -> "/workspace/live-build-config/chroot//var/cache/apt/archives/partial/diffutils_1%3a3.8-4_amd64.deb" [1]
+2026-05-30 11:43:59 URL:http://deb.debian.org/debian/pool/main/d/dmidecode/dmidecode_3.4-1_amd64.deb [68764/68764] -> "/workspace/live-build-config/chroot//var/cache/apt/archives/partial/dmidecode_3.4-1_amd64.deb" [1]
+2026-05-30 11:43:59 URL:http://deb.debian.org/debian/pool/main/l/lvm2/dmsetup_1.02.185-2_amd64.deb [82040/82040] -> "/workspace/live-build-config/chroot//var/cache/apt/archives/partial/dmsetup_2%3a1.02.185-2_amd64.deb" [1]
+2026-05-30 11:43:59 URL:http://deb.debian.org/debian/pool/main/d/dpkg/dpkg_1.21.23_amd64.deb [1567804/1567804] -> "/workspace/live-build-config/chroot//var/cache/apt/archives/partial/dpkg_1.21.23_amd64.deb" [1]
+2026-05-30 11:43:59 URL:http://deb.debian.org/debian/pool/main/e/e2fsprogs/e2fsprogs_1.47.0-2+b2_amd64.deb [571920/571920] -> "/workspace/live-build-config/chroot//var/cache/apt/archives/partial/e2fsprogs_1.47.0-2+b2_amd64.deb" [1]
+2026-05-30 11:43:59 URL:http://deb.debian.org/debian/pool/main/u/util-linux/fdisk_2.38.1-5+deb12u3_amd64.deb [141320/141320] -> "/workspace/live-build-config/chroot//var/cache/apt/archives/partial/fdisk_2.38.1-5+deb12u3_amd64.deb" [1]
+2026-05-30 11:43:59 URL:http://deb.debian.org/debian/pool/main/f/findutils/findutils_4.9.0-4_amd64.deb [635500/635500] -> "/workspace/live-build-config/chroot//var/cache/apt/archives/partial/findutils_4.9.0-4_amd64.deb" [1]
+2026-05-30 11:43:59 URL:http://deb.debian.org/debian/pool/main/g/gcc-12/gcc-12-base_12.2.0-14+deb12u1_amd64.deb [37596/37596] -> "/workspace/live-build-config/chroot//var/cache/apt/archives/partial/gcc-12-base_12.2.0-14+deb12u1_amd64.deb" [1]
+2026-05-30 11:43:59 URL:http://deb.debian.org/debian/pool/main/g/gnupg2/gpgv_2.2.40-1.1+deb12u2_amd64.deb [648768/648768] -> "/workspace/live-build-config/chroot//var/cache/apt/archives/partial/gpgv_2.2.40-1.1+deb12u2_amd64.deb" [1]
