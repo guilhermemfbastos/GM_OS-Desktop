@@ -1,40 +1,8 @@
 ```
-# Build artifacts
-build/
-dist/
+# Debian package cache and apt lists
+live-build-config/chroot/var/cache/apt/archives/
+live-build-config/chroot/var/lib/apt/lists/
 
-# Dependencies
-node_modules/
-.venv/
-venv/
-__pycache__/
-*.egg-info/
-
-# Logs and temp files
-*.log
-*.tmp
-*.swp
-
-# Environment
-.env
-.env.local
-*.env.*
-
-# Editors
-.vscode/
-.idea/
-
-# OS files
-.DS_Store
-Thumbs.db
-
-# Compressed files
-*.zip
-*.gz
-*.tar
-*.tgz
-*.bz2
-*.xz
-*.7z
-*.rar
+# Live build logs
+live-build-config/wget-log*
 ```

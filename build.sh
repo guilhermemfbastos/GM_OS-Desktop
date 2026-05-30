@@ -22,7 +22,10 @@ DEBIAN_RELEASE="${DEBIAN_RELEASE:-bookworm}"  # bookworm ou trixie
 ARCHITECTURE="${ARCHITECTURE:-amd64}"
 ISO_NAME="${ISO_NAME:-custom-debian-gnome}"
 OUTPUT_DIR="./output"
-LB_DIR="./live-build-config"
+
+# Usar caminho absoluto para o diretório do script
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+LB_DIR="${SCRIPT_DIR}/live-build-config"
 
 # Cores para output
 RED='\033[0;31m'
@@ -79,12 +82,12 @@ echo ""
 # -----------------------------------------------------------------------------
 print_info "Limpando builds anteriores..."
 
-cd "$(dirname "$0")"
+cd "$SCRIPT_DIR"
 
 if [ -d "$LB_DIR" ]; then
     cd "$LB_DIR"
     lb clean --purge 2>/dev/null || true
-    cd ..
+    cd "$SCRIPT_DIR"
     print_success "Build anterior limpo."
 else
     print_info "Nenhum build anterior encontrado."
@@ -97,6 +100,7 @@ echo ""
 # -----------------------------------------------------------------------------
 print_info "Configurando live-build para Debian $DEBIAN_RELEASE..."
 
+rm -rf "$LB_DIR"
 mkdir -p "$LB_DIR"
 cd "$LB_DIR"
 
@@ -106,7 +110,6 @@ lb config \
     --distribution "$DEBIAN_RELEASE" \
     --archive-areas "main contrib non-free non-free-firmware" \
     --debian-installer none \
-    --initramfs-compressor gzip \
     --bootappend-live "boot=live components quiet splash nomodeset" \
     --iso-application "Custom Debian GNOME" \
     --iso-preparer "Custom ISO Builder v1.0" \
@@ -114,15 +117,10 @@ lb config \
     --iso-volume "${ISO_NAME^^}" \
     --binary-images iso-hybrid \
     --memtest none \
-    --debian-installer-distribution "$DEBIAN_RELEASE" \
     --security true \
-    --updates true \
     --backports false \
-    --recommends false \
-    --apt false \
-    --apt-individual-lists true \
-    --cache false \
-    --debootstrap-options "--include=ca-certificates,apt-transport-https"
+    --apt-recommends false \
+    --cache false
 
 print_success "Live-build configurado!"
 echo ""
@@ -132,7 +130,7 @@ echo ""
 # -----------------------------------------------------------------------------
 print_info "Copiando arquivos de configuração customizados..."
 
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# SCRIPT_DIR já foi definido no início do script
 
 # Criar estrutura de diretórios se não existir
 mkdir -p config/package-lists
@@ -197,7 +195,7 @@ if [ -d "$SCRIPT_DIR/config/materials" ] && [ "$(ls -A "$SCRIPT_DIR/config/mater
     print_success "Materiais adicionais copiados."
 fi
 
-cd ..
+cd "$SCRIPT_DIR"
 
 echo ""
 
@@ -221,7 +219,7 @@ else
     exit 1
 fi
 
-cd ..
+cd "$SCRIPT_DIR"
 
 echo ""
 
